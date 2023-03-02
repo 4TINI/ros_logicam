@@ -1,22 +1,23 @@
 <launch>
-
     
+    <arg name="frame_rate" default="30"/>
+    <arg name="camera_number" default="1"/>
+    <arg name="use_microphone" default="false"/>
 
-    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
-        <param name="video_device" value="/dev/video0" />
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
+        <param name="video_device" value="/dev/cams/cam$(arg camera_number)" />
         <param name="image_width" value="1920" />
-        <param name="image_height" value="1080" />
+        <param name="image_height" value="1080" /> 
         <param name="pixel_format" value="mjpeg" />
-        <param name="color_format" value="yuv422p" />
         <param name="camera_frame_id" value="usb_cam" />
         <param name="io_method" value="mmap"/>
         <param name="autofocus" value="false" />
-        <param name="framerate" value="60" />
+        <param name="framerate" value="$(arg frame_rate)" />
     </node>
-
-    <node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen">
-        <param name="autosize" value="true" />
-    </node>
-
+    
+    <group if="$(arg use_microphone)">
+        <include file="$(find audio_capture)/launch/capture.launch"/>
+        <include file="$(find audio_play)/launch/play.launch"/>
+    </group>
 
 </launch>
